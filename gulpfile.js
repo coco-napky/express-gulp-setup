@@ -6,31 +6,32 @@
 //====================================================================================
 //==================================== Dependencies ==================================
 //====================================================================================
-var gulp       = require('gulp'),
+"use strict";
+let gulp       = require('gulp'),
     livereload = require('gulp-livereload'),
     concat     = require('gulp-concat'),
     uglify     = require('gulp-uglify'),
     rename     = require('gulp-rename'),
     sass       = require('gulp-ruby-sass'),
     imagemin   = require('gulp-imagemin'),
-    jshint     = require('gulp-jshint')
-    print      = require('gulp-print');
+    server     = require('gulp-develop-server' ),
+    jshint     = require('gulp-jshint');
 
-var paths      = {};
-paths.src      = {};
-paths.build    = {};
-
+let paths         = {};
+paths.src         = {};
+paths.build       = {};
+paths.entryScript = 'bin/www';
 //===================================================================================
 //==================================== Asset Paths ==================================
 //===================================================================================
-var src = './public/src/'
+let src = './assets/src/';
 paths.src.scripts   = src + 'javascripts/';
 paths.src.sass      = src + 'sass/';
 paths.src.images    = src + 'images/';
 paths.src.fonts     = src + 'fonts/';
 paths.src.html      = src;
 
-var dist = './public/'
+let dist = './assets/';
 paths.build.scripts = dist + 'javascripts/';
 paths.build.sass    = dist + 'stylesheets/';
 paths.build.images  = dist + 'images/';
@@ -55,7 +56,7 @@ gulp.task('scripts', () => {
 //======================== Compile SASS to a minified cs ============================
 //===================================================================================
 gulp.task('sass',() => {
-  var opt = { trace: true, style: "compressed" };
+  let opt = { trace: true, style: "compressed" };
   return sass( paths.src.sass + '/style.scss', opt)
     .pipe(gulp.dest(paths.build.sass))
     .pipe(livereload());
@@ -81,7 +82,13 @@ gulp.task('jshint',() => {
 		.pipe(jshint())
 		.pipe(jshint.reporter('default'));
 });
-
+//===================================================================================
+//================================= Server ==========================================
+//===================================================================================
+gulp.task( 'server:start', () => {
+    server.listen( { path: paths.entryScript } );
+});
+gulp.task( 'server:restart',server.restart);
 //===================================================================================
 //======================== A single task to watch them all ==========================
 //===================================================================================
@@ -95,9 +102,12 @@ gulp.task('watch',() => {
   gulp.watch(paths.src.images  + '**/*',      ['images']);
   // Watch .js files
   gulp.watch(paths.src.scripts + '**/*.js',   ['jshint']);
+  //server restart
+  gulp.watch( [ './app.js' ],   ['server:restart']);
+  gulp.watch( [ './api/*.js' ], ['server:restart']);
  });
 
 //===================================================================================
 //======================== Tasks ====================================================
 //===================================================================================
-gulp.task('default', ['scripts', 'sass', 'images','jshint','watch']);
+gulp.task('default', ['scripts', 'sass', 'images','jshint', 'server:start' ,'watch']);

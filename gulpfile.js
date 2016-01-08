@@ -104,7 +104,7 @@ gulp.task('watch',() => {
   gulp.watch(paths.src.scripts + '**/*.js',   ['jshint']);
   //server restart
   gulp.watch( [ './app.js' ],   ['server:restart']);
-  gulp.watch( [ './api/*.js' ], ['server:restart']);
+  gulp.watch( [ './api/**/*.js' ], ['server:restart']);
  });
 
 //===================================================================================

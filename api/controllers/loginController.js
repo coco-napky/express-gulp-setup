@@ -18,7 +18,6 @@ function loginPost(req, res, next) {
   passport.authenticate('local', function(err, user, info) {
     if (err) return next(err);
     if (!user) {
-      req.session.messages = 'Login Failed';
       return res.send('Your login attemp failed');
     }
 
@@ -29,8 +28,10 @@ function loginPost(req, res, next) {
         return next(err);
       }
 
-      // set the message
-      req.session.messages = "Login Successful";
+      req.session.user     = {};
+      req.session.user.username = user.username;
+      req.session.user.name     = user.name;
+      req.session.user.admin    = user.admin;
       return res.redirect('/');
     });
 

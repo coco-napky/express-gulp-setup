@@ -12,6 +12,12 @@ router.get('/', (req, res, next) => {
 
 /* POST user . */
 router.post('/', (req, res, next) => {
+
+  if(!req.isAuthenticated())
+    return res.send('must login first');
+
+  console.log(req.session);
+
   let params   = {};
       params.name       = req.body.name;
       params.username   = req.body.username;

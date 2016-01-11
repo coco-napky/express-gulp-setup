@@ -1,13 +1,20 @@
 "use strict";
 let express               = require('express'),
     User                  = require('../models/user'),
+    passport              = require('passport'),
+    LocalStrategy         = require('passport-local').Strategy,
     passportLocalMongoose = require('passport-local-mongoose'),
     router                = express.Router();
 
 /* GET users listing. */
 router.get('/', (req, res, next) => {
   User.find({},(err,user) => {
-        User.find({},(err,users) => { res.json(users);});
+        User.find({},(err,users) => {
+          //hide password
+          for (let i = 0; i < users.length; i++)
+            users[i].password  = '****';
+          return res.json(users);
+        });
   });
 });
 
@@ -15,37 +22,20 @@ router.get('/find/', (req, res, next) => {
   User.find({},(err,users) => { res.json(users);});
 });
 
-router.get('/find/:username', (req, res, next) => {
+router.get('/:username', (req, res, next) => {
     User.find({username :req.params.username }, (err, user) => {
-        if (err) console.log('error');
-        res.json(user);
+        if (err) return res.send('Error Finding user');
+        //hide password
+        user[0].password = '****';
+        return res.json(user);
     });
 });
 
 router.get('/delete/:username', (req, res, next) => {
     User.findOneAndRemove({username :req.params.username }, (err, user) => {
-        if (err) console.log('error');
+        if (err) return res.send('Error deleting user');
+        return res.send('deleted');
     });
-});
-
-/* POST user . */
-router.post('/add', (req, res, next) => {
-  let params   = {};
-      params.name     = req.body.name;
-      params.username = req.body.username;
-      params.password = req.body.password;
-      params.admin    = parseInt(req.body.admin);
-      params.date     = new Date();
-
-  // create a new user
-  var newUser = User(params);
-
-  //save the user
-  newUser.save( (err) => {
-    if (err) console.log('error');
-    res.json(newUser);
-  });
-
 });
 
 module.exports = router;

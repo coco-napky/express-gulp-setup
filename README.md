@@ -12,3 +12,15 @@
 - image optimization
 - lift application
 - auto restart application whenever serverside files are modified.
+
+**Express template**
+
+- serve-favicon
+- morgan
+- body-parser
+- cookie-parser
+- passport (local-auth)
+- express-session
+- mongoose
+- routing
+- MVC Pattern : User,Login,Register,Index Controllers

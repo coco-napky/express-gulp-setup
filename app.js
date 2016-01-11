@@ -31,7 +31,7 @@ let secretSessionString = '';
 if(secretSessionString == '')
   throw Error('Define your app secret string');
 app.use(session({
-  secret : 'learn mongoose',
+  secret : secretSessionString,
   resave : true,
   saveUninitialized : false
 }));

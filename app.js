@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 //Secret value is a string that should be kept secret and unique per application
-let secretSessionString = '';
+let secretSessionString = 'reactive';
 if(secretSessionString == '')
   throw Error('Define your app secret string');
 app.use(session({
@@ -41,7 +41,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //'mongodb://localhost/mongoosetest'
-let dbConnectionString = '';
+let dbConnectionString = 'mongodb://localhost/reactive';
 if(dbConnectionString == '')
   throw Error('mongoose db connection string must be defined');
 app.use(express.static(path.join(__dirname, 'assets')));

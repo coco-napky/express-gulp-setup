@@ -15,6 +15,7 @@ let gulp       = require('gulp'),
     sass       = require('gulp-ruby-sass'),
     imagemin   = require('gulp-imagemin'),
     server     = require('gulp-develop-server' ),
+    babel      = require('gulp-babel'),
     jshint     = require('gulp-jshint');
 
 let paths         = {};
@@ -46,6 +47,7 @@ gulp.task('scripts', () => {
    console.log('Dist Scripts : ' + paths.build.scripts);
 
     return gulp.src(paths.src.scripts + '**/*.js')
+       .pipe(babel())
        .pipe(rename({suffix: '.min'}))
        .pipe(uglify())
        .pipe(gulp.dest(paths.build.scripts))
@@ -79,8 +81,9 @@ gulp.task('images',() => {
 gulp.task('jshint',() => {
 	return gulp
 		.src([ paths.src.scripts + '*.js'])
-		.pipe(jshint())
-		.pipe(jshint.reporter('default'));
+		.pipe(jshint({"esnext": true, "plusplus": true,
+                  "devel": true, "globalstrict": true}))
+		.pipe(jshint.reporter('default'));6
 });
 //===================================================================================
 //================================= Server ==========================================

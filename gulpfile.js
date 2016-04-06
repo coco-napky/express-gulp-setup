@@ -7,32 +7,35 @@
 //==================================== Dependencies ==================================
 //====================================================================================
 "use strict";
-let gulp       = require('gulp'),
-    livereload = require('gulp-livereload'),
-    concat     = require('gulp-concat'),
-    uglify     = require('gulp-uglify'),
-    rename     = require('gulp-rename'),
-    sass       = require('gulp-ruby-sass'),
-    imagemin   = require('gulp-imagemin'),
-    server     = require('gulp-develop-server' ),
-    babel      = require('gulp-babel'),
-    jshint     = require('gulp-jshint');
+const gulp       = require('gulp'),
+      livereload = require('gulp-livereload'),
+      concat     = require('gulp-concat'),
+      uglify     = require('gulp-uglify'),
+      rename     = require('gulp-rename'),
+      sass       = require('gulp-ruby-sass'),
+      imagemin   = require('gulp-imagemin'),
+      server     = require('gulp-develop-server' ),
+      browserify = require('browserify'),
+      streamify  = require('gulp-streamify'),
+      source     = require('vinyl-source-stream'),
+      babel      = require('gulp-babel'),
+      jshint     = require('gulp-jshint');
 
-let paths         = {};
+const paths         = {};
 paths.src         = {};
 paths.build       = {};
 paths.entryScript = 'bin/www';
 //===================================================================================
 //==================================== Asset Paths ==================================
 //===================================================================================
-let src = './assets/src/';
+const src = './assets/src/';
 paths.src.scripts   = src + 'javascripts/';
 paths.src.sass      = src + 'sass/';
 paths.src.images    = src + 'images/';
 paths.src.fonts     = src + 'fonts/';
 paths.src.html      = src;
 
-let dist = './assets/';
+const dist = './assets/';
 paths.build.scripts = dist + 'javascripts/';
 paths.build.sass    = dist + 'stylesheets/';
 paths.build.images  = dist + 'images/';
@@ -46,12 +49,17 @@ gulp.task('scripts', () => {
    console.log('Src Scripts : '  + paths.src.scripts);
    console.log('Dist Scripts : ' + paths.build.scripts);
 
-    return gulp.src(paths.src.scripts + '**/*.js')
-       .pipe(babel())
-       .pipe(rename({suffix: '.min'}))
-       .pipe(uglify())
-       .pipe(gulp.dest(paths.build.scripts))
-       .pipe(livereload());
+
+   return browserify({
+          debug: true,
+          entries: [ paths.src.scripts + '/app.js' ]
+        })
+        .transform("babelify", {presets: ["es2015", "react"]})
+        .bundle()
+        .pipe( source('app.js') )
+        .pipe(streamify(uglify()))
+        .pipe(streamify(rename({suffix: ".min"})))
+        .pipe(gulp.dest(paths.build.scripts));
 });
 
 //===================================================================================

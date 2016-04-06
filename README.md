@@ -6,6 +6,7 @@
 
 **Gulp tasks**
 - Compile and minify SASS files.
+- Babelify
 - Uglify javascripts
 - livereload
 - jshints
